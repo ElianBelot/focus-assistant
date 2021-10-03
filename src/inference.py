@@ -109,6 +109,6 @@ def predict(image, x1, y1, x2, y2):
     categories, continuous = infer(image, context_norm, body_norm, ind2cat, ind2vad, device, thresholds, models, bbox=bbox)
 
     # Return results
-    results = {'emotions': categories, 'valence': continuous[0], 'arousal': continuous[1], 'dominance': continuous[2]}
+    results = {'emotions': categories, 'valence': float(continuous[0]), 'arousal': float(continuous[1]), 'dominance': float(continuous[2])}
 
     return results
