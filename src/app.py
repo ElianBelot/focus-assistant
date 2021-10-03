@@ -7,6 +7,9 @@ Code Sources
 import cv2
 import time
 import os
+from inference import *
+from emotic import Emotic
+
 
 # CONSTANTS
 LOW_FOCUS_SCORE_THRESHOLD = .7
@@ -16,7 +19,7 @@ FOCUS_COUNTER_THRESHOLD = 5
 
 
 def low_focus_score(valence, arousal, dominance):
-    return 0
+    return arousal
 
 
 # TAKES A PICTURE EVERY SECOND, DETECTS FACE, CALLS ML MODEL, USES PREDICTION TO CALCULATE
@@ -30,6 +33,7 @@ cap = cv2.VideoCapture(0)
 focus_counter = 0
 
 # Infinite loop performs all the functionality
+print('Starting camera')
 while True:
     # Adjust time as desired
     time.sleep(1)
@@ -47,21 +51,26 @@ while True:
 
     x, y, w, h = faces[0]
     x1, y1, x2, y2 = x, y, x + w, y + h
-    print(f'{x1} {y1} {x2} {y2}')
-
     # To visualize rectangle around face on screen
     cv2.rectangle(img, (x1, y1), (x2, y2), (255, 0, 0), 2)
     # Display the image
     cv2.imshow('img', img)
 
     # Resize img to (224,224) for faster processing by model
-    img = cv2.resize(img, (224, 224))
+    # img = cv2.resize(img, (224, 224))
     # Enable the below line instead of the above cv2.imshow line to see resized image
     # cv2.imshow('img', img)
 
     # Call model to make the inference on the face's valence, arousal, dominance
-    valence, arousal, dominance = ML_MODEL_CALL_WITH_IMG_AND_COORDINATES
+    results = predict(img, x1, y1, x2, y2)
+    valence, arousal, dominance = results['valence'], results['arousal'], results['dominance']
+    print()
+    for k, v in results.items():
+        if k != 'emotions':
+            print(f'{k.upper()}: \t {v:.3f}')
 
+    # Incomplete!
+    continue
     # Calculate the low_focus_score of the current image's face
     low_focus_score = low_focus_score(valence, arousal, dominance)
 
