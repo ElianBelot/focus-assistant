@@ -13,14 +13,17 @@ LOW_FOCUS_SCORE_THRESHOLD = .7
 FOCUS_COUNTER_THRESHOLD = 5
 
 # LOW_FOCUS_SCORE IMPLEMENTATION
-def low_focus_score (valence, arousal, dominance):
+
+
+def low_focus_score(valence, arousal, dominance):
     return 0
 
-# TAKES A PICTURE EVERY SECOND, DETECTS FACE, CALLS ML MODEL, USES PREDICTION TO CALCULATE 
+
+# TAKES A PICTURE EVERY SECOND, DETECTS FACE, CALLS ML MODEL, USES PREDICTION TO CALCULATE
 # LOW_FOCUS_SCORE, AND IF SCORE IS ABOVE THRESHOLD WE NOTIFY USER WITH SCREEN FLASH
 # Load the cascade
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-# To capture video from webcam. 
+# To capture video from webcam.
 cap = cv2.VideoCapture(0)
 
 # focus_counter keeps track of how many consecutive seconds you are distraught
@@ -40,7 +43,7 @@ while True:
     # Detect the faces, get box coordinates of first face
     faces = face_cascade.detectMultiScale(gray, 1.1, 4)
     if len(faces) == 0:
-         continue
+        continue
 
     x, y, w, h = faces[0]
     x1, y1, x2, y2 = x, y, x + w, y + h
@@ -63,8 +66,8 @@ while True:
     low_focus_score = low_focus_score(valence, arousal, dominance)
 
     # If low_focus_score is above the LOW_FOCUS_SCORE_THRESHOLD for more than 5 seconds,
-    # make a sound and notify the user to get back to work. Seconds counter resets 
-    # whenever user gets focused again within that 5 second span. 
+    # make a sound and notify the user to get back to work. Seconds counter resets
+    # whenever user gets focused again within that 5 second span.
     if low_focus_score > LOW_FOCUS_SCORE_THRESHOLD:
         focus_counter += 1
         if focus_counter > FOCUS_COUNTER_THRESHOLD:
@@ -73,10 +76,10 @@ while True:
             focus_counter = 0
     else:
         focus_counter = 0
-        
+
     # End program if escape key is pressed
     k = cv2.waitKey(30) & 0xff
-    if k==27:
+    if k == 27:
         break
 
 
